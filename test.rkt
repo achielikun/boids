@@ -1,0 +1,87 @@
+#lang r7rs
+
+(import (scheme base)
+        (prefix (racket gui) gui:)
+        (prefix (racket base) base:))
+
+
+;; 1. Create the window frame
+(define frame (gui:new gui:frame% 
+                        (label "testt")
+                        (width 800)
+                        (height 800)))
+(define x 150)
+(define y 150)
+(define vx 0.2)
+(define vy 0.2)
+
+(define size 20)
+(define height 800)
+(define width 800)
+
+(define previous-time (base:current-milliseconds))
+(define fps-accum-time 0)
+(define fps-frames 0)
+(define target-fps 600)
+(define ms-per-frame (quotient 1000 target-fps))
+
+
+
+
+(define (update-callback! dt)
+  (set! x (+ x (* vx dt)))
+  (set! y (+ y (* vy dt)))
+
+  (when (or (> x (- height size)) (< x 0)) (set! x (- x vx)))
+  (when (or (> y (- width size)) (< y 0)) (set! y (- y vy))))
+
+
+
+  
+
+(define (draw-callback! canvas dc)
+  (gui:send dc set-background "white")
+  (gui:send dc clear)
+  
+ 
+  (gui:send dc set-brush "black" 'solid)
+  (gui:send dc draw-ellipse x y 20 20))
+
+(define canvas (gui:new gui:canvas% 
+                          (parent frame)
+                          (paint-callback draw-callback!)))
+
+
+(define (game-loop)
+  (let* ((current-time (base:current-milliseconds))
+         (dt( - current-time previous-time)))
+    (set! previous-time current-time)
+    (set! fps-accum-time (+ fps-accum-time dt))
+    (set! fps-frames (+ fps-frames 1))
+
+    (when (>= fps-accum-time 1000)
+      (gui:send frame set-label
+                (string-append "test - FPS: " (number->string fps-frames)))
+      (set! fps-frames 0)
+      (set! fps-accum-time (- fps-accum-time 1000)))
+
+    (update-callback! dt)
+    (gui:send canvas refresh)
+
+    (let* ((end-time (base:current-milliseconds))
+           (frame-duration (- end-time current-time))
+           (wait-time (max 1 (- ms-per-frame frame-duration))))
+      (gui:send timer start wait-time #t))))
+
+(define timer (gui:new gui:timer%
+                       (notify-callback game-loop)
+                       (just-once? #t)))
+
+    
+
+
+(gui:send frame show #t)
+(gui:send timer start 1 #t)
+
+
+
