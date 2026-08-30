@@ -1,19 +1,23 @@
 #lang r7rs
 
 (import (scheme base)
+        (boids logic)
         (prefix (racket gui) gui:)
         (prefix (racket base) base:))
 
 
+
+
+(define logic (make-logic))
 ;; 1. Create the window frame
 (define frame (gui:new gui:frame% 
                         (label "testt")
                         (width 800)
                         (height 800)))
-(define x 150)
-(define y 150)
-(define vx 0.2)
-(define vy 0.2)
+;; (define x 150)
+;; (define y 150)
+;; (define vx 0.2)
+;; (define vy 0.2)
 
 (define size 20)
 (define height 800)
@@ -22,18 +26,19 @@
 (define previous-time (base:current-milliseconds))
 (define fps-accum-time 0)
 (define fps-frames 0)
-(define target-fps 600)
+(define target-fps 400)
 (define ms-per-frame (quotient 1000 target-fps))
 
 
 
 
-(define (update-callback! dt)
-  (set! x (+ x (* vx dt)))
-  (set! y (+ y (* vy dt)))
-
-  (when (or (> x (- height size)) (< x 0)) (set! x (- x vx)))
-  (when (or (> y (- width size)) (< y 0)) (set! y (- y vy))))
+;; (define (update-callback! dt)
+;;   (let ((dt-seconds (/ dt 1000.0)))
+;;     (set! x (+ x (* vx dt)))
+;;     (set! y (+ y (* vy dt)))
+    
+;;     (when (or (> x (- height size)) (< x 0)) (set! x (- x vx)))
+;;     (when (or (> y (- width size)) (< y 0)) (set! y (- y vy)))))
 
 
 
@@ -51,6 +56,15 @@
                           (parent frame)
                           (paint-callback draw-callback!)))
 
+;; (define (update-fps! dt)
+;;   (set! fps-accum-dt (+ fps-accum-dt dt))
+;;   (set! fps-accum-frames (+ fps-accum-frames 1))
+;;   (when (> fps-accum-dt fps-refresh-time)
+;;     (set! fps fps-accum-frames)
+;;     (set! fps-accum-frames 0)
+;;     (set! fps-accum-dt (- fps-accum-dt fps-refresh-time))))
+
+
 
 (define (game-loop)
   (let* ((current-time (base:current-milliseconds))
@@ -64,7 +78,7 @@
                 (string-append "test - FPS: " (number->string fps-frames)))
       (set! fps-frames 0)
       (set! fps-accum-time (- fps-accum-time 1000)))
-
+    ((logic 'update-callback!) dt)
     (update-callback! dt)
     (gui:send canvas refresh)
 
