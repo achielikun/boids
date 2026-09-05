@@ -2,6 +2,8 @@
 
 (import (scheme base)
         (boids logic)
+        (boids constants)
+        (boids boid-adt)
         (prefix (racket gui) gui:)
         (prefix (racket base) base:))
 
@@ -11,17 +13,15 @@
 (define logic (make-logic))
 ;; 1. Create the window frame
 (define frame (gui:new gui:frame% 
-                        (label "testt")
-                        (width 800)
-                        (height 800)))
+                        (label "test")
+                        (width width)
+                        (height height)))
 ;; (define x 150)
 ;; (define y 150)
 ;; (define vx 0.2)
 ;; (define vy 0.2)
+(define boid (make-boid))
 
-(define size 20)
-(define height 800)
-(define width 800)
 
 (define previous-time (base:current-milliseconds))
 (define fps-accum-time 0)
@@ -32,14 +32,6 @@
 
 
 
-;; (define (update-callback! dt)
-;;   (let ((dt-seconds (/ dt 1000.0)))
-;;     (set! x (+ x (* vx dt)))
-;;     (set! y (+ y (* vy dt)))
-    
-;;     (when (or (> x (- height size)) (< x 0)) (set! x (- x vx)))
-;;     (when (or (> y (- width size)) (< y 0)) (set! y (- y vy)))))
-
 
 
   
@@ -48,21 +40,14 @@
   (gui:send dc set-background "white")
   (gui:send dc clear)
   
- 
+  
   (gui:send dc set-brush "black" 'solid)
-  (gui:send dc draw-ellipse x y 20 20))
+  (gui:send dc draw-ellipse (boid 'x)(boid 'y) 20 20))
 
 (define canvas (gui:new gui:canvas% 
                           (parent frame)
                           (paint-callback draw-callback!)))
 
-;; (define (update-fps! dt)
-;;   (set! fps-accum-dt (+ fps-accum-dt dt))
-;;   (set! fps-accum-frames (+ fps-accum-frames 1))
-;;   (when (> fps-accum-dt fps-refresh-time)
-;;     (set! fps fps-accum-frames)
-;;     (set! fps-accum-frames 0)
-;;     (set! fps-accum-dt (- fps-accum-dt fps-refresh-time))))
 
 
 
@@ -78,8 +63,8 @@
                 (string-append "test - FPS: " (number->string fps-frames)))
       (set! fps-frames 0)
       (set! fps-accum-time (- fps-accum-time 1000)))
-    ((logic 'update-callback!) dt)
-    (update-callback! dt)
+    ((logic 'update-callback!) boid dt)
+    ;; (update-callback! dt)               
     (gui:send canvas refresh)
 
     (let* ((end-time (base:current-milliseconds))
