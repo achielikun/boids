@@ -9,18 +9,20 @@
 (define-library ()
   (begin
     (define (make-logic)
-      (let ((vx 0.2)
-            (vy 0.2))
-
-
-        (define (update-callback! boid dt)
-          ((boid 'set-x!) (+(boid 'x) (* vx dt)))
-          ((boid 'set-y!)  (+ (boid 'y) (* vy dt)))
-          
-          (when (or (> (boid 'x) (- height size)) (< (boid 'x) 0)) ((boid 'set-x!) (- (boid 'x) vx)))
-          (when (or (> (boid 'y) (- width size)) (< (boid 'y) 0)) ((boid 'set-y!) (- (boid 'y) vy))))
-
-
-        (lambda (msg)
-          (cond ((eq? msg 'update-callback!) update-callback!)
-                 (else (error "Logic-ADT -- Unknown message: " msg))))))))
+      
+      (define (update-callback! flock dt)
+        (for-each
+         (lambda (boid)
+           ((boid 'set-x!) (+ (boid 'x) (* (boid 'vx) dt)))
+           ((boid 'set-y!)  (+ (boid 'y) (* (boid 'vy) dt)))
+           
+           (when (or (> (boid 'x) (- height size)) (< (boid 'x) 0))
+             ((boid 'set-vx!) (- (boid 'vx))))
+           (when (or (> (boid 'y) (- width size)) (< (boid 'y) 0))
+             ((boid 'set-vy!) (- (boid 'vy)))))
+         flock))
+      
+      
+      (lambda (msg)
+        (cond ((eq? msg 'update-callback!) update-callback!)
+              (else (error "Logic-ADT -- Unknown message: " msg)))))))

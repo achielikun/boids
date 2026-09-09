@@ -5,7 +5,7 @@
         (boids constants)
         (boids boid-adt)
         (prefix (racket gui) gui:)
-        (prefix (racket base) base:))
+        (prefix (racket base) racket:))
 
 
 
@@ -16,14 +16,18 @@
                         (label "test")
                         (width width)
                         (height height)))
-;; (define x 150)
-;; (define y 150)
-;; (define vx 0.2)
-;; (define vy 0.2)
-(define boid (make-boid))
 
 
-(define previous-time (base:current-milliseconds))
+(define (make-boids)
+    (do ((i 0 (+ i 1))
+         (res '() (cons (make-boid) res)))
+        ((= i boid-count) res)))
+
+(define flock (make-boids))
+
+
+
+(define previous-time (racket:current-milliseconds))
 (define fps-accum-time 0)
 (define fps-frames 0)
 (define target-fps 400)
@@ -31,18 +35,13 @@
 
 
 
-
-
-
-  
-
 (define (draw-callback! canvas dc)
   (gui:send dc set-background "white")
   (gui:send dc clear)
-  
-  
   (gui:send dc set-brush "black" 'solid)
-  (gui:send dc draw-ellipse (boid 'x)(boid 'y) 20 20))
+
+  
+  (for-each (lambda (boid)(gui:send dc draw-ellipse (boid 'x)(boid 'y) 20 20))flock))
 
 (define canvas (gui:new gui:canvas% 
                           (parent frame)
@@ -52,7 +51,7 @@
 
 
 (define (game-loop)
-  (let* ((current-time (base:current-milliseconds))
+  (let* ((current-time (racket:current-milliseconds))
          (dt( - current-time previous-time)))
     (set! previous-time current-time)
     (set! fps-accum-time (+ fps-accum-time dt))
@@ -63,11 +62,11 @@
                 (string-append "test - FPS: " (number->string fps-frames)))
       (set! fps-frames 0)
       (set! fps-accum-time (- fps-accum-time 1000)))
-    ((logic 'update-callback!) boid dt)
+    ((logic 'update-callback!) flock dt)
     ;; (update-callback! dt)               
     (gui:send canvas refresh)
 
-    (let* ((end-time (base:current-milliseconds))
+    (let* ((end-time (racket:current-milliseconds))
            (frame-duration (- end-time current-time))
            (wait-time (max 1 (- ms-per-frame frame-duration))))
       (gui:send timer start wait-time #t))))

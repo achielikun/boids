@@ -7,11 +7,13 @@
   (export height
           width
           size
+          boid-count
           )
 
 
   (begin
-    (define size 20)
+    (define size 12)
     (define height 800)
     (define width 800)
+    (define boid-count 50)
     ))
