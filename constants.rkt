@@ -8,12 +8,19 @@
           width
           size
           boid-count
+          seperation-radius
+          alighnment-radius
+          cohesion-radius
           )
 
 
   (begin
-    (define size 12)
+    (define size 16)
     (define height 800)
     (define width 800)
     (define boid-count 50)
+    (define seperation-radius 15)
+    (define alighnment-radius 50)
+    (define cohesion-radius 100)
+    
     ))

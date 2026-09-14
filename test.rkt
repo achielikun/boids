@@ -41,7 +41,7 @@
   (gui:send dc set-brush "black" 'solid)
 
   
-  (for-each (lambda (boid)(gui:send dc draw-ellipse (boid 'x)(boid 'y) 20 20))flock))
+  (for-each (lambda (boid)(gui:send dc draw-ellipse (boid 'x)(boid 'y) size size))flock))
 
 (define canvas (gui:new gui:canvas% 
                           (parent frame)
