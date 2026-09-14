@@ -38,7 +38,7 @@
                  (dist  (if other (euclid-distance boid other) 0.0)))
             (cond ((and (null? rest) (> count 0)) (cons (- (/ align-x count) (boid 'vx)) (- (/ align-y count) (boid 'vy))))
                   ((null? rest) (cons 0.0 0.0))
-                  ((and (not (eq? boid other)) (< dist alighnment-radius)) (loop (cdr rest) (+ align-x (other 'vx)) (+ align-y (other 'vy)) (+ count 1)))
+                  ((and (not (eq? boid other)) (< dist alignment-radius)) (loop (cdr rest) (+ align-x (other 'vx)) (+ align-y (other 'vy)) (+ count 1)))
                   (else (loop (cdr rest) align-x align-y count))))))
 
 
@@ -75,8 +75,8 @@
            (let* ((sep (seperation boid flock))
                   (ali (alignment boid flock))
                   (coh (cohesion boid flock))
-                  (new-vx (+ (boid 'vx) (* (car sep) 0.001) (* (car ali) 0.01) (* (car coh) 0.0001)))
-                  (new-vy (+ (boid 'vy) (* (car sep) 0.001) (* (car ali) 0.01) (* (car coh) 0.0001))))
+                  (new-vx (+ (boid 'vx) (* (car sep) seperation-weight) (* (car ali) alignment-weight) (* (car coh) cohesion-weight)))
+                  (new-vy (+ (boid 'vy) (* (car sep) seperation-weight) (* (car ali) alignment-weight) (* (car coh) cohesion-weight))))
              ((boid 'set-vx!) new-vx)
              ((boid 'set-vx!) new-vx)))
            flock)
