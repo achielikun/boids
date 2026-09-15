@@ -15,9 +15,7 @@
         (let ((dx (- (b1 'x) (b2 'x)))
               (dy (- (b1 'y) (b2 'y))))
           (sqrt (+ (* dx dx) (* dy dy)))))
-
-
-      
+    
       (define (seperation boid flock)
         (let loop ((rest flock)
                     (sep-x 0.0)
@@ -54,18 +52,6 @@
                   ((and (not (eq? boid other)) (< dist cohesion-radius)) (loop (cdr rest) (+ coh-x (other 'x)) (+ coh-y (other 'y)) (+ count 1)))
                   (else (loop (cdr rest) coh-x coh-y count))))))
                                                   
-                   
-        
-        
-
-
-
-        
-                   
-                   
-      
-      
-      
       
       (define (update-callback! flock dt)
 
@@ -92,8 +78,7 @@
            (when (or (> (boid 'y) (- width size)) (< (boid 'y) 0))
              ((boid 'set-vy!) (- (boid 'vy)))))
          flock))
-      
-      
+     
       (lambda (msg)
         (cond ((eq? msg 'update-callback!) update-callback!)
               (else (error "Logic-ADT -- Unknown message: " msg)))))))
